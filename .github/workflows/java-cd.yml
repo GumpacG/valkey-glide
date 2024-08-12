@@ -148,9 +148,9 @@ jobs:
         steps:
             - name: Move all files to one zip file
               run: |
-                  mkdir java/bundles
-                  cp java/bundle*.jar java/bundles
-                  zip -r java/bundles-${{ env.INPUT_VERSION }}.zip java/bundles
+                  mkdir bundles
+                  cp java/bundle*.jar bundles
+                  zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
 
             - name: Upload artifacts to publish
               continue-on-error: true
@@ -158,4 +158,4 @@ jobs:
               with:
                   name: bundles-${{ env.INPUT_VERSION }}.zip
                   path: |
-                      java/bundles-${{ env.INPUT_VERSION }}.zip
+                      bundles-${{ env.INPUT_VERSION }}.zip

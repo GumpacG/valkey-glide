@@ -73,7 +73,8 @@ jobs:
                         TARGET: aarch64-apple-darwin,
                     }
 
-        runs-on: ${{ matrix.host.RUNNER }}
+#        runs-on: ${{ matrix.host.RUNNER }}
+        runs-on: ubuntu-latest
 
         steps:
             - name: Setup self-hosted runner access

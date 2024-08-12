@@ -147,8 +147,10 @@ jobs:
             INPUT_VERSION: ${{ github.event.inputs.version }}
         steps:
             - name: Move all files to one zip file
-              run:
-                  zip -r java/bundles-${{ env.INPUT_VERSION }}.zip java
+              run: |
+                  mkdir java/bundles
+                  cp java/bundle*.jar java/bundles
+                  zip -r java/bundles-${{ env.INPUT_VERSION }}.zip java/bundles
 
             - name: Upload artifacts to publish
               continue-on-error: true

@@ -24,25 +24,7 @@ permissions:
     id-token: write
 
 jobs:
-    start-self-hosted-runner:
-        if: github.repository_owner == 'valkey-io'
-        runs-on: ubuntu-latest
-        environment: AWS_ACTIONS
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-
-            - name: Start self hosted EC2 runner
-              uses: ./.github/workflows/start-self-hosted-runner
-              with:
-                  role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
-                  aws-region: ${{ secrets.AWS_REGION }}
-                  ec2-instance-id: ${{ secrets.AWS_EC2_INSTANCE_ID }}
-
     create-binaries-to-publish:
-        needs: start-self-hosted-runner
         if: github.repository_owner == 'valkey-io'
         timeout-minutes: 35
         env:
@@ -73,21 +55,9 @@ jobs:
                         TARGET: aarch64-apple-darwin,
                     }
 
-#        runs-on: ${{ matrix.host.RUNNER }}
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.host.RUNNER }}
 
         steps:
-            - name: Setup self-hosted runner access
-              run: |
-                  GHA_HOME=/home/ubuntu/actions-runner/_work/valkey-glide
-                  if [ -d $GHA_HOME ]; then
-                    sudo chown -R $USER:$USER $GHA_HOME
-                    sudo rm -rf $GHA_HOME
-                    mkdir -p $GHA_HOME/valkey-glide
-                  else
-                    echo "No cleaning needed"
-                  fi
-
             - uses: actions/checkout@v4
               with:
                   submodules: recursive

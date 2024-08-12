@@ -58,6 +58,16 @@ jobs:
         runs-on: ${{ matrix.host.RUNNER }}
 
         steps:
+            - name: Setup self-hosted runner access
+              run: |
+                  GHA_HOME=/home/ubuntu/actions-runner/_work/valkey-glide
+                  if [ -d $GHA_HOME ]; then
+                    sudo chown -R $USER:$USER $GHA_HOME
+                    sudo rm -rf $GHA_HOME
+                    mkdir -p $GHA_HOME/valkey-glide
+                  else
+                    echo "No cleaning needed"
+                  fi
             - uses: actions/checkout@v4
               with:
                   submodules: recursive
@@ -121,6 +131,14 @@ jobs:
                   ls -ltr
                   cd -
                   cp $src_folder/bundle.jar bundle-${{ matrix.host.TARGET }}.jar
+
+            - name: Upload artifacts to publish
+              continue-on-error: true
+              uses: actions/upload-artifact@v4
+              with:
+                  name: java-${{ matrix.host.TARGET }}
+                  path: |
+                      java/bundle*.jar
 
     combine-binaries-to-one-directory:
         needs: create-binaries-to-publish

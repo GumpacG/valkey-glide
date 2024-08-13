@@ -148,10 +148,6 @@ jobs:
         steps:
             - name: Download published artifacts
               uses: actions/download-artifact@v4
-              with:
-                name: java
-                path: |
-                  *
 
             - name: Display structure of downloaded files
               run: ls -R

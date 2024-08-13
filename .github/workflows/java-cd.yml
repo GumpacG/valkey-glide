@@ -155,8 +155,8 @@ jobs:
             - name: Move all files to one zip file
               run: |
                 mkdir bundles
-                mv ./java-aarch64-apple-darwin/* bundles
-                mv ./java-x86_64-apple-darwin/* bundles
+#                mv ./java-aarch64-apple-darwin/* bundles
+#                mv ./java-x86_64-apple-darwin/* bundles
                 mv ./java-x86_64-unknown-linux-gnu/* bundles
                 zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
 

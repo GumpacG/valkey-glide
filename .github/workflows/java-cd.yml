@@ -147,12 +147,14 @@ jobs:
             INPUT_VERSION: ${{ github.event.inputs.version }}
         steps:
             - name: Download published artifacts
-              continue-on-error: true
               uses: actions/download-artifact@v4
               with:
-                name: java-${{ matrix.host.TARGET }}
+                name: java
                 path: |
                   *
+
+            - name: Display structure of downloaded files
+              run: ls -R
 
             - name: Move all files to one zip file
               run: |

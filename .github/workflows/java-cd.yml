@@ -49,7 +49,9 @@ jobs:
         strategy:
             # Run all jobs
             fail-fast: true
-#            matrix:
+            matrix:
+                build: ${{fromJson(needs.load-platform-matrix.outputs.PLATFORM_MATRIX)}}
+        #            matrix:
 #                host:
 ##                    - {
 ##                        OS: ubuntu,

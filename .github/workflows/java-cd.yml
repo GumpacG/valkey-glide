@@ -146,16 +146,24 @@ jobs:
         env:
             INPUT_VERSION: ${{ github.event.inputs.version }}
         steps:
+            - name: Download published artifacts
+              continue-on-error: true
+              uses: actions/download-artifact@v4
+              with:
+                name: java-${{ matrix.host.TARGET }}
+                path: |
+                  java/bundle*.jar
+
             - name: Move all files to one zip file
               run: |
-                  mkdir bundles
-                  cp java/bundle*.jar bundles
-                  zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
+                mkdir bundles
+                mv java/bundle*.jar bundles
+                zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
 
             - name: Upload artifacts to publish
               continue-on-error: true
               uses: actions/upload-artifact@v4
               with:
-                  name: bundles-${{ env.INPUT_VERSION }}.zip
-                  path: |
-                      bundles-${{ env.INPUT_VERSION }}.zip
+                name: bundles-${{ env.INPUT_VERSION }}.zip
+                path: |
+                  bundles-${{ env.INPUT_VERSION }}.zip

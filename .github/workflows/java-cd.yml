@@ -155,10 +155,10 @@ jobs:
                 mv ./java-aarch64-apple-darwin/* bundles
                 mv ./java-x86_64-apple-darwin/* bundles
                 mv ./java-x86_64-unknown-linux-gnu/* bundles
+                mv ./java-aarch64-unknown-linux-gnu/* bundles
                 zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
 
             - name: Upload artifacts to publish
-              continue-on-error: true
               uses: actions/upload-artifact@v4
               with:
                 name: bundles-${{ env.INPUT_VERSION }}.zip

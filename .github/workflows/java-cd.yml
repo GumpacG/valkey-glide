@@ -150,14 +150,13 @@ jobs:
               run: ls -R
 
             - name: Move all files to one zip file
+            # TODO: Add `./java-aarch64-unknown-linux-gnu/* bundles` when we are able to support a linux arm runner.
+            # TODO: Add "maven" to linux arm PACKAGE_MANAGER in build-matrix.json.
               run: |
                 mkdir bundles
                 mv ./java-aarch64-apple-darwin/* bundles
                 mv ./java-x86_64-apple-darwin/* bundles
                 mv ./java-x86_64-unknown-linux-gnu/* bundles
-#                TODO: Uncomment when we are able to support a linux arm runner.
-#                TODO: Add "maven" to linux arm PACKAGE_MANAGER in build-matrix.json.
-#                mv ./java-aarch64-unknown-linux-gnu/* bundles
                 zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
 
             - name: Upload artifacts to publish

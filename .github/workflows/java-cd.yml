@@ -152,12 +152,12 @@ jobs:
               with:
                 name: java-${{ matrix.host.TARGET }}
                 path: |
-                  java*.zip
+                  *
 
             - name: Move all files to one zip file
               run: |
                 mkdir bundles
-                mv java*.zip bundles
+                mv * bundles
                 zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
 
             - name: Upload artifacts to publish

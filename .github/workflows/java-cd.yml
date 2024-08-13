@@ -118,7 +118,8 @@ jobs:
             - name: Build java client
               working-directory: java
               run: |
-                  ./gradlew :client:publishToMavenLocal -Psigning.secretKeyRingFile=secring.gpg -Psigning.password="${{ secrets.GPG_PASSWORD }}" -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
+                  ./gradlew :client:publishToMavenLocal
+#                  ./gradlew :client:publishToMavenLocal -Psigning.secretKeyRingFile=secring.gpg -Psigning.password="${{ secrets.GPG_PASSWORD }}" -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
               env:
                   GLIDE_RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 

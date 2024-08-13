@@ -148,11 +148,13 @@ jobs:
             INPUT_VERSION: ${{ github.event.inputs.version }}
         steps:
             - name: Move all files to one zip file
-              working-directory: java
+              uses: actions/download-artifact@v4
+              with:
+                name: my-artifact
+                path: java
               run: |
                   mkdir bundles
-                  ls -R
-                  cp bundle*.jar bundles
+                  mv java/bundle*.jar bundles
                   zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
 
             - name: Upload artifacts to publish

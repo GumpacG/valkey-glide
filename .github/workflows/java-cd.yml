@@ -165,12 +165,7 @@ jobs:
         runs-on: self-hosted
         steps:
             - name: Download published artifacts
-              continue-on-error: true
               uses: actions/download-artifact@v4
-              with:
-                name: java-${{ matrix.host.TARGET }}
-                path: |
-                  java/bundle*.jar
 
             - name: Set the release version
               shell: bash
@@ -190,10 +185,9 @@ jobs:
             - name: Move all files to one directory
               run: |
                   mkdir maven-files
-                  mv java/bundle*.jar maven-files
-                  cp java/bundle*.jar bundle.jar
+                  cp ./java-*/bundle*.jar bundle.jar
+                  mv ./java-*/bundle*.jar maven-files
                   unzip bundle.jar
-
 
             - name: Upload artifacts to publish
               continue-on-error: true

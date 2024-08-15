@@ -15,6 +15,10 @@ on:
             version:
                 description: 'The release version of GLIDE, formatted as *.*.* or *.*.*-rc*'
                 required: true
+            maven_publish:
+                description: 'Publish to Maven Central'
+                required: true
+                type: boolean
 
 concurrency:
     group: java-cd-${{ github.head_ref || github.ref }}
@@ -190,6 +194,8 @@ jobs:
                   unzip bundle.jar
                   mv valkey-glide-*.pom maven-files
                   mv valkey-glide-*-sources.jar maven-files
+                  mv valkey-glide-*.module maven-files
+                  mv valkey-glide-*javadoc.jar maven-files
 
             - name: Upload artifacts to publish
               continue-on-error: true

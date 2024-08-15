@@ -189,13 +189,13 @@ jobs:
 
             - name: Move all files to one zip file
               run: |
-                  mkdir bundles-$RELEASE_VERSION
-                  mv java/bundle*.jar bundles-$RELEASE_VERSION
+                  mkdir bundles
+                  mv java/bundle*.jar bundles
 
             - name: Upload artifacts to publish
               continue-on-error: true
               uses: actions/upload-artifact@v4
               with:
-                  name: bundles-$RELEASE_VERSION
+                  name: bundles-${{ env.RELEASE_VERSION }}
                   path: |
-                      bundles-$RELEASE_VERSION
+                      bundles

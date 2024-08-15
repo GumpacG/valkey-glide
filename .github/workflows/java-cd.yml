@@ -49,20 +49,20 @@ jobs:
         strategy:
             # Run all jobs
             fail-fast: true
+#            matrix:
+#                build: ${{fromJson(needs.load-platform-matrix.outputs.PLATFORM_MATRIX)}}
             matrix:
-                build: ${{fromJson(needs.load-platform-matrix.outputs.PLATFORM_MATRIX)}}
-        #            matrix:
-#                host:
-##                    - {
-##                        OS: ubuntu,
-##                        RUNNER: ubuntu-latest,
-##                        TARGET: x86_64-unknown-linux-gnu,
-##                    }
+                host:
 #                    - {
 #                        OS: ubuntu,
-#                        RUNNER: ["self-hosted", "Linux", "ARM64"],
-#                        TARGET: aarch64-unknown-linux-gnu,
+#                        RUNNER: ubuntu-latest,
+#                        TARGET: x86_64-unknown-linux-gnu,
 #                    }
+                    - {
+                        OS: ubuntu,
+                        RUNNER: ["self-hosted", "Linux", "ARM64"],
+                        TARGET: aarch64-unknown-linux-gnu,
+                    }
 #                    - {
 #                        OS: macos,
 #                        RUNNER: macos-12,
@@ -74,7 +74,7 @@ jobs:
 #                        TARGET: aarch64-apple-darwin,
 #                    }
 
-        runs-on: ${{ matrix.build.RUNNER }}
+        runs-on: ${{ matrix.host.RUNNER }}
 
         steps:
             - name: Setup self-hosted runner access
@@ -116,8 +116,8 @@ jobs:
             - name: Install shared software dependencies
               uses: ./.github/workflows/install-shared-dependencies
               with:
-                  os: ${{ matrix.build.OS }}
-                  target: ${{ matrix.build.TARGET }}
+                  os: ${{ matrix.host.OS }}
+                  target: ${{ matrix.host.TARGET }}
                   github-token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Install protoc (protobuf)
@@ -150,13 +150,13 @@ jobs:
                   jar -cvf bundle.jar *
                   ls -ltr
                   cd -
-                  cp $src_folder/bundle.jar bundle-${{ matrix.build.TARGET }}.jar
+                  cp $src_folder/bundle.jar bundle-${{ matrix.host.TARGET }}.jar
 
             - name: Upload artifacts to publish
               continue-on-error: true
               uses: actions/upload-artifact@v4
               with:
-                  name: java-${{ matrix.build.TARGET }}
+                  name: java-${{ matrix.host.TARGET }}
                   path: |
                       java/bundle*.jar
 
@@ -168,7 +168,7 @@ jobs:
               continue-on-error: true
               uses: actions/download-artifact@v4
               with:
-                name: java-${{ matrix.build.TARGET }}
+                name: java-${{ matrix.host.TARGET }}
                 path: |
                   java/bundle*.jar
 

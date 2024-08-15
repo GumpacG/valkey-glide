@@ -163,8 +163,6 @@ jobs:
     combine-binaries-to-one-directory:
         needs: create-binaries-to-publish
         runs-on: self-hosted
-        env:
-            INPUT_VERSION: ${{ github.event.inputs.version }}
         steps:
             - name: Download published artifacts
               continue-on-error: true
@@ -174,16 +172,30 @@ jobs:
                 path: |
                   java/bundle*.jar
 
+            - name: Set the release version
+              shell: bash
+              run: |
+                 if ${{ github.event_name == 'pull_request' }}; then
+                    R_VERSION="255.255.255"
+                  elif ${{ github.event_name == 'workflow_dispatch' }}; then
+                    R_VERSION="${{ env.INPUT_VERSION }}"
+                  else
+                    R_VERSION=${GITHUB_REF:11}
+                  fi
+                  echo "RELEASE_VERSION=${R_VERSION}" >> $GITHUB_ENV
+                  echo "Release version detected: $R_VERSION"
+              env:
+                  INPUT_VERSION: ${{ github.event.inputs.version }}
+
             - name: Move all files to one zip file
               run: |
                   mkdir bundles
                   mv java/bundle*.jar bundles
-                  zip -r bundles-${{ env.INPUT_VERSION }}.zip bundles
 
             - name: Upload artifacts to publish
               continue-on-error: true
               uses: actions/upload-artifact@v4
               with:
-                  name: bundles-${{ env.INPUT_VERSION }}.zip
+                  name: bundles-${{ RELEASE_VERSION }}
                   path: |
-                      bundles-${{ env.INPUT_VERSION }}.zip
+                      bundles-${{ RELEASE_VERSION }}

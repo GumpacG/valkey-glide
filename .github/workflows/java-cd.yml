@@ -187,15 +187,18 @@ jobs:
               env:
                   INPUT_VERSION: ${{ github.event.inputs.version }}
 
-            - name: Move all files to one zip file
+            - name: Move all files to one directory
               run: |
-                  mkdir bundles
-                  mv java/bundle*.jar bundles
+                  mkdir maven-files
+                  mv java/bundle*.jar maven-files
+                  cp java/bundle*.jar bundle.jar
+                  unzip bundle.jar
+
 
             - name: Upload artifacts to publish
               continue-on-error: true
               uses: actions/upload-artifact@v4
               with:
-                  name: bundles-${{ env.RELEASE_VERSION }}
+                  name: maven-files-${{ env.RELEASE_VERSION }}
                   path: |
-                      bundles
+                      maven-files

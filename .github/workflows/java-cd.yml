@@ -182,12 +182,14 @@ jobs:
               env:
                   INPUT_VERSION: ${{ github.event.inputs.version }}
 
-            - name: Move all files to one directory
+            - name: Move all required files to one directory
               run: |
                   mkdir maven-files
                   cp ./java-*/bundle*.jar bundle.jar
                   mv ./java-*/bundle*.jar maven-files
                   unzip bundle.jar
+                  mv valkey-glide-*.pom maven-files
+                  mv valkey-glide-*-sources.jar maven-files
 
             - name: Upload artifacts to publish
               continue-on-error: true

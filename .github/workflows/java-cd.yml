@@ -189,8 +189,8 @@ jobs:
 
             - name: Move all files to one zip file
               run: |
-                  mkdir bundles
-                  mv java/bundle*.jar bundles
+                  mkdir bundles-$RELEASE_VERSION
+                  mv java/bundle*.jar bundles-$RELEASE_VERSION
 
             - name: Upload artifacts to publish
               continue-on-error: true

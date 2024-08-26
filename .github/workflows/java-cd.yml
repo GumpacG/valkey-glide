@@ -139,7 +139,7 @@ jobs:
 #                      java/bundle*.jar
 
     publish-artifacts-to-maven-central:
-        needs: create-binaries-to-publish
+#        needs: create-binaries-to-publish
         runs-on: ubuntu-latest
         steps:
 #            - name: Get status of Maven Central published artifact

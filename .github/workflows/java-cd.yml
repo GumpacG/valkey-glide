@@ -224,7 +224,7 @@ jobs:
               uses: actions/setup-java@v4
               with:
                 distribution: "temurin"
-                java-version: ${{ env.JAVA_VERSION }}
+                java-version: '11'
 
             - name: Set credentials for gradle
               working-directory: java

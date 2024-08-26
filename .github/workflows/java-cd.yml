@@ -229,8 +229,8 @@ jobs:
             - name: Set credentials for gradle
               working-directory: java
               run: |
-                  BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
-                  ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderName="Authorization"
-                  ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderValue="Bearer $BEARER_TOKEN"
-                  GLIDE_RELEASE_VERSION=${{ env.RELEASE_VERSION }}
+                  export BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
+                  export ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderName="Authorization"
+                  export ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderValue="Bearer $BEARER_TOKEN"
+                  export GLIDE_RELEASE_VERSION=${{ env.RELEASE_VERSION }}
                   ./gradlew run

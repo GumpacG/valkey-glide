@@ -226,6 +226,12 @@ jobs:
                 distribution: "temurin"
                 java-version: '11'
 
+            - name: Install protoc (protobuf)
+              uses: arduino/setup-protoc@v3
+              with:
+                version: "26.1"
+                repo-token: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Set credentials for gradle
               working-directory: java
               run: |

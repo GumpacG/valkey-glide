@@ -222,6 +222,7 @@ jobs:
 
             - name: Check status of deployment
               run: |
+                  BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
                   export DEPLOYMENT_ID=6a48b2c5-c3c5-4941-bd38-6011b0985ae5
                   export DEPLOYMENT_STATUS=`curl --request POST  \
                   --header "Authorization: Bearer $BEARER_TOKEN" \

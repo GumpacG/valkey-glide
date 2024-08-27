@@ -230,7 +230,7 @@ jobs:
                   | jq '.deploymentState'`
                   printenv DEPLOYMENT_STATUS
                   printenv DEPLOYMENT_ID
-                  if [[ $DEPLOYMENT_STATUS -ne "VALIDATED" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
+                  if [[ $DEPLOYMENT_STATUS -ne ""VALIDATED"" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
 
             - uses: actions/checkout@v4
               with:

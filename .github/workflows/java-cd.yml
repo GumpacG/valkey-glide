@@ -229,8 +229,10 @@ jobs:
               run: |
                   echo "BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)" >> $GITHUB_ENV
                   echo "DEPLOYMENT_ID=6a48b2c5-c3c5-4941-bd38-6011b0985ae5" >> $GITHUB_ENV
-                  echo $DEPLOYMENT_STATUS
-                  echo $DEPLOYMENT_ID
+                  export DEPLOYMENT_STATUS=`curl --request POST  \
+                  --header "Authorization: Bearer ${{ env.BEARER_TOKEN }}" \
+                  "https://central.sonatype.com/api/v1/publisher/status?id=${{ env.DEPLOYMENT_ID }}" \
+                  | jq '.deploymentState'`
                   if [[ $DEPLOYMENT_STATUS -ne ""VALIDATED"" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
 
             - uses: actions/checkout@v4

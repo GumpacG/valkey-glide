@@ -260,7 +260,7 @@ jobs:
             - name: Drop deployment if validation fails
               if: ${{ failure() }}
               run: |
-                  printenv $DEPLOYMENT_ID
+                  printenv DEPLOYMENT_ID
                   curl --request DELETE \
                     --verbose \
                     --header "Authorization: Bearer $BEARER_TOKEN" \

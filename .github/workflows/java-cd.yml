@@ -232,6 +232,7 @@ jobs:
               run: |
                   export ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderName="Authorization"
                   export ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderValue="Bearer ${{ env.BEARER_TOKEN }}"
+                  export RUN_DEPLOYMENT_TEST=true
                   export GLIDE_RELEASE_VERSION=${{ env.RELEASE_VERSION }}
                   ./gradlew run
 

@@ -208,12 +208,10 @@ jobs:
 #            - name: Check status of deployment
 #              run: |
 #                  sleep 20
-#                  echo ${{ env.DEPLOYMENT_ID }}
 #                  export DEPLOYMENT_STATUS=`curl --request POST --verbose \
 #                  --header "Authorization: Bearer ${{ env.BEARER_TOKEN }}" \
 #                  "https://central.sonatype.com/api/v1/publisher/status?id=${{ env.DEPLOYMENT_ID }}" \
 #                  | jq '.deploymentState'`
-#                  echo $DEPLOYMENT_STATUS
 #                  if [[ $DEPLOYMENT_STATUS != ""\"VALIDATED"\"" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
 #
 #            - uses: actions/checkout@v4
@@ -240,18 +238,16 @@ jobs:
 #                  export RUN_DEPLOYMENT_TEST=true
 #                  export GLIDE_RELEASE_VERSION=${{ env.RELEASE_VERSION }}
 #                  ./gradlew run
-#
-#
-#
 
-
-            - name: Drop deployment if validation fails
-#              if: ${{ failure() }}
+            - name: Publish to Maven Central
+              environment: AWS_ACTIONS
               run: |
-                  echo "${{ env.DEPLOYMENT_ID }}"
-                  BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
-                  curl --request DELETE \
-                  --verbose \
-                  --header "Authorization: Bearer $BEARER_TOKEN" \
-                  "https://central.sonatype.com/api/v1/publisher/deployment/f5bebf3a-84a7-4b23-94d6-bb3c34c9e647"
+                  echo "Requires approval"
 
+#            - name: Drop deployment if validation fails
+##              if: ${{ failure() }}
+#              run: |
+#                  curl --request DELETE \
+#                  --verbose \
+#                  --header "Authorization: Bearer ${{ env.BEARER_TOKEN }}" \
+#                  "https://central.sonatype.com/api/v1/publisher/deployment/${{ env.DEPLOYMENT_ID }}"

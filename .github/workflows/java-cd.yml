@@ -261,8 +261,4 @@ jobs:
               if: ${{ failure() }}
               run: |
                   printenv DEPLOYMENT_ID
-                  curl --request DELETE \
-                    --verbose \
-                    --header "Authorization: Bearer $BEARER_TOKEN" \
-                    "https://central.sonatype.com/api/v1/publisher/deployment/$DEPLOYMENT_ID"
 

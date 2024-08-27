@@ -229,7 +229,7 @@ jobs:
               run: |
                   export BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
                   DEPLOYMENT_ID=6a48b2c5-c3c5-4941-bd38-6011b0985ae5
-                  printenv DEPLOYMENT_ID
+                  echo $DEPLOYMENT_ID
                   if [[ $DEPLOYMENT_STATUS -ne ""VALIDATED"" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
 
             - uses: actions/checkout@v4
@@ -260,5 +260,5 @@ jobs:
             - name: Drop deployment if validation fails
               if: ${{ failure() }}
               run: |
-                  printenv DEPLOYMENT_ID
+                  echo $DEPLOYMENT_ID
 

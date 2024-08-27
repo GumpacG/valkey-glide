@@ -227,7 +227,7 @@ jobs:
                   --header "Authorization: Bearer $BEARER_TOKEN" \
                   "https://central.sonatype.com/api/v1/publisher/status?id=123" \
                   | jq '.deploymentState'`
-                  echo DEPLOYMENT_STATUS
+                  printenv DEPLOYMENT_STATUS
                   if [[ $DEPLOYMENT_STATUS -ne "VALIDATED" ]]; then exit 1 ; fi
 
             - uses: actions/checkout@v4

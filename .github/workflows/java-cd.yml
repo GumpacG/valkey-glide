@@ -228,8 +228,8 @@ jobs:
             - name: Check status of deployment
               run: |
                   export BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
-                  DEPLOYMENT_ID=6a48b2c5-c3c5-4941-bd38-6011b0985ae5
-                  echo $DEPLOYMENT_ID
+                  export DEPLOYMENT_ID=6a48b2c5-c3c5-4941-bd38-6011b0985ae5
+                  echo $DEPLOYMENT_ID >> $GITHUB_ENV
                   if [[ $DEPLOYMENT_STATUS -ne ""VALIDATED"" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
 
             - uses: actions/checkout@v4
@@ -260,5 +260,5 @@ jobs:
             - name: Drop deployment if validation fails
               if: ${{ failure() }}
               run: |
-                  echo $DEPLOYMENT_ID
+                  echo ${{ env.$DEPLOYMENT_ID }}
 

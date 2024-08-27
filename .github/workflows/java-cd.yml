@@ -225,7 +225,7 @@ jobs:
                   export DEPLOYMENT_ID=6a48b2c5-c3c5-4941-bd38-6011b0985ae5
                   export DEPLOYMENT_STATUS=`curl --request POST  \
                   --header "Authorization: Bearer $BEARER_TOKEN" \
-                  "https://central.sonatype.com/api/v1/publisher/status?id=123" \
+                  "https://central.sonatype.com/api/v1/publisher/status?id=$DEPLOYMENT_ID" \
                   | jq '.deploymentState'`
                   if [[ $DEPLOYMENT_STATUS -ne "VALIDATED" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
 

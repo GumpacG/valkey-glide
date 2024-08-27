@@ -239,8 +239,7 @@ jobs:
 #                  export GLIDE_RELEASE_VERSION=${{ env.RELEASE_VERSION }}
 #                  ./gradlew run
 
-            - name: Publish to Maven Central
-              uses: trstringer/manual-approval@v1
+            - uses: trstringer/manual-approval@v1
               with:
                 secret: ${{ github.TOKEN }}
                 approvers: Yury-Fridlyand,GumpacG,acarbonetto,jamesx-improving,jonathanl-bq,tjzhang-BQ,yipin-chen,prateek-kumar-improving
@@ -248,8 +247,11 @@ jobs:
                 issue-title: "Deploying to Maven Central"
                 issue-body: "Please approve or deny the deployment to Maven Central"
                 exclude-workflow-initiator-as-approver: false
+
+
+            - name: Publish to Maven
               run: |
-                  echo "Request to deploy was approved"
+                echo "Request to deploy was approved"
 
 #            - name: Drop deployment if validation fails
 ##              if: ${{ failure() }}

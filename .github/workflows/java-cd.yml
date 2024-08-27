@@ -246,7 +246,7 @@ jobs:
 
 
             - name: Drop deployment if validation fails
-              if: ${{ failure() }}
+#              if: ${{ failure() }}
               run: |
                   echo "${{ env.DEPLOYMENT_ID }}"
                   BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)

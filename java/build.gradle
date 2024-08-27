@@ -12,14 +12,14 @@ repositories {
 
 subprojects {
     repositories {
-//        maven {
-//            name = "centralManualTesting"
-//            url "https://central.sonatype.com/api/v1/publisher/deployments/download/"
-//            credentials(HttpHeaderCredentials)
-//            authentication {
-//                header(HttpHeaderAuthentication)
-//            }
-//        }
+        maven {
+            name = "centralManualTesting"
+            url "https://central.sonatype.com/api/v1/publisher/deployments/download/"
+            credentials(HttpHeaderCredentials)
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
         mavenCentral()
     }
     // minimal java compatibility level

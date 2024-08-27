@@ -15,6 +15,10 @@ on:
             version:
                 description: 'The release version of GLIDE, formatted as *.*.* or *.*.*-rc*'
                 required: true
+            maven_publish:
+                description: 'Publish to Maven Central'
+                required: true
+                type: boolean
 
 concurrency:
     group: java-cd-${{ github.head_ref || github.ref }}
@@ -210,11 +214,20 @@ jobs:
 #            - name: Publish to Maven Central
 #              run: |
 #                  BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
-#                  curl --request POST \
+#                  export DEPLOYMENT_ID=`curl --request POST \
 #                  --verbose \
 #                  --header "Authorization: Bearer $BEARER_TOKEN" \
 #                  --form bundle=@build.zip \
-#                  https://central.sonatype.com/api/v1/publisher/upload
+#                  https://central.sonatype.com/api/v1/publisher/upload | tail -n 1`
+
+            - name: Check status of deployment
+              run: |
+                  export DEPLOYMENT_ID=6a48b2c5-c3c5-4941-bd38-6011b0985ae5
+                  export DEPLOYMENT_STATUS=`curl --request POST  \
+                  --header "Authorization: Bearer $BEARER_TOKEN" \
+                  "https://central.sonatype.com/api/v1/publisher/status?id=$DEPLOYMENT_ID" \
+                  | jq '.deploymentState'`
+                  if [[ $STATUS -eq "VALIDATED" ]]; then exit 1 ; fi
 
             - uses: actions/checkout@v4
               with:
@@ -232,7 +245,7 @@ jobs:
                 version: "26.1"
                 repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Set credentials for gradle
+            - name: Test deployment
               working-directory: java
               run: |
                   export BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
@@ -240,3 +253,5 @@ jobs:
                   export ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderValue="Bearer $BEARER_TOKEN"
                   export GLIDE_RELEASE_VERSION=${{ env.RELEASE_VERSION }}
                   ./gradlew run
+
+

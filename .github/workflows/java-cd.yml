@@ -229,6 +229,7 @@ jobs:
               run: |
                   export BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
                   export DEPLOYMENT_ID=6a48b2c5-c3c5-4941-bd38-6011b0985ae5
+                  echo $BEARER_TOKEN >> $GITHUB_ENV
                   echo $DEPLOYMENT_ID >> $GITHUB_ENV
                   if [[ $DEPLOYMENT_STATUS -ne ""VALIDATED"" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
 
@@ -251,9 +252,8 @@ jobs:
             - name: Test deployment
               working-directory: java
               run: |
-                  export BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
                   export ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderName="Authorization"
-                  export ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderValue="Bearer $BEARER_TOKEN"
+                  export ORG_GRADLE_PROJECT_centralManualTestingAuthHeaderValue="Bearer ${{ env.BEARER_TOKEN }}"
                   export GLIDE_RELEASE_VERSION=${{ env.RELEASE_VERSION }}
                   ./gradlew run
 
@@ -262,6 +262,6 @@ jobs:
               run: |
                   curl --request DELETE \
                   --verbose \
-                  --header "Authorization: Bearer $BEARER_TOKEN" \
+                  --header "Authorization: Bearer ${{ env.BEARER_TOKEN }}" \
                   "https://central.sonatype.com/api/v1/publisher/deployment/${{ env.DEPLOYMENT_ID }}"
 

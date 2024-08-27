@@ -220,6 +220,11 @@ jobs:
 #                  --form bundle=@build.zip \
 #                  https://central.sonatype.com/api/v1/publisher/upload | tail -n 1`
 
+            #                  export DEPLOYMENT_STATUS=`curl --request POST  \
+            #                  --header "Authorization: Bearer $BEARER_TOKEN" \
+            #                  "https://central.sonatype.com/api/v1/publisher/status?id=$DEPLOYMENT_ID" \
+            #                  | jq '.deploymentState'`
+
             - name: Check status of deployment
               run: |
                   export BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)

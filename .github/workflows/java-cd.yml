@@ -151,7 +151,7 @@ jobs:
 
     publish-to-maven-central-deployment:
         if: ${{ inputs.maven_publish == true }}
-        needs: create-binaries-to-publish
+        needs: [set-release-version, create-binaries-to-publish]
         runs-on: ubuntu-latest
         outputs:
             DEPLOYMENT_ID: ${{ steps.maven-deployment.outputs.DEPLOYMENT_ID }}
@@ -165,6 +165,7 @@ jobs:
             # TODO: Add `./java-aarch64-unknown-linux-gnu/* bundles` when we are able to support a linux arm runner.
             # TODO: Add "maven" to linux arm PACKAGE_MANAGER in build-matrix.json.
               run: |
+                echo ${{ env.RELEASE_VERSION }}
                 mkdir maven-files
                 cd maven-files
                 for file in $(find ../. -name "*.jar"); do jar xf "$file" ; done

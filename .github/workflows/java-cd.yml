@@ -258,8 +258,8 @@ jobs:
         runs-on: ubuntu-latest
 #        environment: AWS_ACTIONS
         env:
-            DEPLOYMENT_ID: ${{ needs.maven-deployment.outputs.deployment-id }}
+            DEPLOYMENT_ID: ${{ needs.publish-deploy-to-maven-central-deployment.outputs.deployment-id }}
         steps:
             - name: Publish to Maven
               run: |
-                echo "${{ env.DEPLOYMENT_ID }}"
+                echo ${{ env.DEPLOYMENT_ID }}

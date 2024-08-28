@@ -79,7 +79,7 @@
 * Python: Fix `XClaim` return type to `List[bytes]` instead of `List[TEncodable]` ([#2075](https://github.com/valkey-io/valkey-glide/pull/2075))
 
 ### Operational Enhancements
-* CI/CD: Update workflow to zip bundle files and use build-matrix.json ([#2128](https://github.com/valkey-io/valkey-glide/pull/2128))
+* CI/CD: Add workflow for automating Maven release ([#2128](https://github.com/valkey-io/valkey-glide/pull/2128))
 
 ## 1.0.0 (2024-07-09)
 

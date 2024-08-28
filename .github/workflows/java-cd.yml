@@ -201,6 +201,7 @@ jobs:
                   echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_ENV
                   echo "BEARER_TOKEN=$BEARER_TOKEN" >> $GITHUB_ENV
                   echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
+                  echo $DEPLOYMENT_ID
 
             - name: Check status of deployment
               run: |

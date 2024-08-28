@@ -120,7 +120,8 @@ jobs:
             - name: Build java client
               working-directory: java
               run: |
-                  ./gradlew :client:publishToMavenLocal -Psigning.secretKeyRingFile=secring.gpg -Psigning.password="${{ secrets.GPG_PASSWORD }}" -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
+                  ./gradlew :client:publishToMavenLocal -Psigning.secretKeyRingFile=secring.gpg \
+                  -Psigning.password="${{ secrets.GPG_PASSWORD }}" -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
               env:
                   GLIDE_RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
@@ -219,6 +220,7 @@ jobs:
                   --header "Authorization: Bearer ${{ env.BEARER_TOKEN }}" \
                   "https://central.sonatype.com/api/v1/publisher/status?id=${{ env.DEPLOYMENT_ID }}" \
                   | jq '.deploymentState'`
+                  echo $DEPLOYMENT_STATUS
                   if [[ $DEPLOYMENT_STATUS != ""\"VALIDATED"\"" || $DEPLOYMENT_STATUS -eq null ]]; then exit 1 ; fi
 
             - uses: actions/checkout@v4
@@ -255,6 +257,7 @@ jobs:
                   "https://central.sonatype.com/api/v1/publisher/deployment/${{ env.DEPLOYMENT_ID }}"
 
 #    publish-release-to-maven:
+#        if: ${{ inputs.maven_publish == true }}
 #        needs: [publish-deploy-to-maven-central-deployment]
 #        runs-on: ubuntu-latest
 #        environment: AWS_ACTIONS

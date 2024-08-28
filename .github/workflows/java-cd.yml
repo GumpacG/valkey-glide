@@ -262,7 +262,7 @@ jobs:
 #                  "https://central.sonatype.com/api/v1/publisher/deployment/${{ env.DEPLOYMENT_ID }}"
 
     test-deployment-id-output:
-        needs: publish-deploy-to-maven-central-deployment
+        needs: publish-to-maven-central-deployment
         if: always()
         runs-on: ubuntu-latest
         env:

@@ -143,6 +143,7 @@ jobs:
                       java/bundle*.jar
 
     publish-deploy-to-maven-central-deployment:
+        if: ${{ inputs.maven_publish == true }}
         needs: create-binaries-to-publish
         runs-on: ubuntu-latest
         outputs:

@@ -44,29 +44,29 @@ jobs:
 #                    export "PLATFORM_MATRIX=$(jq 'map(select(.PACKAGE_MANAGERS | contains(["java"])))' < .github/json_matrices/build-matrix.json | jq -c .)"
 #                    echo "PLATFORM_MATRIX=${PLATFORM_MATRIX}" >> $GITHUB_OUTPUT
 
-    create-binaries-to-publish:
-#        needs: load-platform-matrix
-#        if: github.repository_owner == 'valkey-io'
-        timeout-minutes: 35
-        env:
-            JAVA_VERSION: '11'
-        strategy:
-            # Run all jobs
-            fail-fast: true
+#    create-binaries-to-publish:
+##        needs: load-platform-matrix
+##        if: github.repository_owner == 'valkey-io'
+#        timeout-minutes: 35
+#        env:
+#            JAVA_VERSION: '11'
+#        strategy:
+#            # Run all jobs
+#            fail-fast: true
+##            matrix:
+##                build: ${{fromJson(needs.load-platform-matrix.outputs.PLATFORM_MATRIX)}}
 #            matrix:
-#                build: ${{fromJson(needs.load-platform-matrix.outputs.PLATFORM_MATRIX)}}
-            matrix:
-                host:
+#                host:
 #                    - {
 #                        OS: ubuntu,
 #                        RUNNER: ubuntu-latest,
 #                        TARGET: x86_64-unknown-linux-gnu,
 #                    }
-                    - {
-                        OS: ubuntu,
-                        RUNNER: ["self-hosted", "Linux", "ARM64"],
-                        TARGET: aarch64-unknown-linux-gnu,
-                    }
+#                    - {
+#                        OS: ubuntu,
+#                        RUNNER: ["self-hosted", "Linux", "ARM64"],
+#                        TARGET: aarch64-unknown-linux-gnu,
+#                    }
 #                    - {
 #                        OS: macos,
 #                        RUNNER: macos-12,
@@ -78,8 +78,9 @@ jobs:
 #                        TARGET: aarch64-apple-darwin,
 #                    }
 
-        runs-on: ${{ matrix.host.RUNNER }}
-
+#        runs-on: ${{ matrix.host.RUNNER }}
+    get-release-version:
+        runs-on: ubuntu-latest
         steps:
 #            - name: Setup self-hosted runner access
 #              run: |

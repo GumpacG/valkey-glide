@@ -67,7 +67,7 @@ jobs:
                 echo "RELEASE_VERSION=$R_VERSION" >> $GITHUB_OUTPUT
 
     create-binaries-to-publish:
-        needs: set-release-version
+        needs: [set-release-version, load-platform-matrix]
         if: github.repository_owner == 'valkey-io'
         timeout-minutes: 35
         env:

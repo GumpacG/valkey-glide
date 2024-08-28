@@ -56,7 +56,7 @@ jobs:
               shell: bash
               run: |
                 if ${{ github.event_name == 'pull_request' }}; then
-                    R_VERSION="0.1.0"
+                    R_VERSION="255.255.255"
                 elif ${{ github.event_name == 'workflow_dispatch' }}; then
                     R_VERSION="${{ github.event.inputs.version }}"
                 else
@@ -164,6 +164,7 @@ jobs:
             # TODO: Add `./java-aarch64-unknown-linux-gnu/* bundles` when we are able to support a linux arm runner.
             # TODO: Add "maven" to linux arm PACKAGE_MANAGER in build-matrix.json.
               run: |
+                echo ${{ env.RELEASE_VERSION }}
                 mkdir maven-files
                 cd maven-files
                 for file in $(find ../. -name "*.jar"); do jar xf "$file" ; done
@@ -182,7 +183,6 @@ jobs:
                   rm build/io/valkey/valkey-glide/${{ env.RELEASE_VERSION }}/maven-metadata-local.xml
                   cd build
                   zip -r ../build io
-                  tree
 
             - name: Upload artifacts to publish
               uses: actions/upload-artifact@v4

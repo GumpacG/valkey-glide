@@ -180,7 +180,6 @@ jobs:
                   mkdir -p build/io/valkey/valkey-glide/${{ env.RELEASE_VERSION }}
                   cp -a maven-files/* build/io/valkey/valkey-glide/${{ env.RELEASE_VERSION }}
                   rm -rf build/io/valkey/valkey-glide/${{ env.RELEASE_VERSION }}/META-INF
-                  rm build/io/valkey/valkey-glide/${{ env.RELEASE_VERSION }}/maven-metadata-local.xml
                   cd build
                   zip -r ../build io
 

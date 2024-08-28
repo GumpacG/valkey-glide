@@ -266,7 +266,7 @@ jobs:
         if: always()
         runs-on: ubuntu-latest
         env:
-            DEPLOYMENT_ID: ${{ needs.publish-deploy-to-maven-central-deployment.outputs.DEPLOYMENT_ID }}
+            DEPLOYMENT_ID: ${{ needs.publish-to-maven-central-deployment.outputs.DEPLOYMENT_ID }}
         steps:
             - name: Print deployment id
               run: echo ${{ env.DEPLOYMENT_ID }}

@@ -30,7 +30,7 @@ permissions:
 jobs:
     load-platform-matrix:
         runs-on: ubuntu-latest
-#        environment: AWS_ACTIONS
+        environment: AWS_ACTIONS
         outputs:
             PLATFORM_MATRIX: ${{ steps.load-platform-matrix.outputs.PLATFORM_MATRIX }}
         steps:
@@ -165,7 +165,6 @@ jobs:
             # TODO: Add `./java-aarch64-unknown-linux-gnu/* bundles` when we are able to support a linux arm runner.
             # TODO: Add "maven" to linux arm PACKAGE_MANAGER in build-matrix.json.
               run: |
-                echo ${{ env.RELEASE_VERSION }}
                 mkdir maven-files
                 cd maven-files
                 for file in $(find ../. -name "*.jar"); do jar xf "$file" ; done

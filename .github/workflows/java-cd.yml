@@ -142,10 +142,16 @@ jobs:
 #                  path: |
 #                      java/bundle*.jar
 
-    publish-artifacts-to-maven-central:
+    publish-deploy-to-maven-central-deployment:
 #        needs: create-binaries-to-publish
         runs-on: ubuntu-latest
+        outputs:
+            deployment-id: ${{ steps.maven-deployment.outputs.DEPLOYMENT_ID }}
         steps:
+            - name: test outputs
+              id: maven-deployment
+              run:
+                 echo "DEPLOYMENT_ID=123" >> $GITHUB_OUTPUT
 #            - name: Download published artifacts
 #              uses: actions/download-artifact@v4
 #
@@ -239,20 +245,6 @@ jobs:
 #                  export GLIDE_RELEASE_VERSION=${{ env.RELEASE_VERSION }}
 #                  ./gradlew run
 
-            - uses: trstringer/manual-approval@v1
-              with:
-                secret: ${{ github.TOKEN }}
-                approvers: glide-maintainers
-                minimum-approvals: 1
-                issue-title: "Deploying to Maven Central"
-                issue-body: "Please approve or deny the deployment to Maven Central"
-                exclude-workflow-initiator-as-approver: false
-
-
-            - name: Publish to Maven
-              run: |
-                echo "Request to deploy was approved"
-
 #            - name: Drop deployment if validation fails
 ##              if: ${{ failure() }}
 #              run: |
@@ -260,3 +252,14 @@ jobs:
 #                  --verbose \
 #                  --header "Authorization: Bearer ${{ env.BEARER_TOKEN }}" \
 #                  "https://central.sonatype.com/api/v1/publisher/deployment/${{ env.DEPLOYMENT_ID }}"
+
+    publish-release-to-maven:
+        needs: [publish-deploy-to-maven-central-deployment]
+        runs-on: ubuntu-latest
+#        environment: AWS_ACTIONS
+        env:
+            DEPLOYMENT_ID: ${{ needs.maven-deployment.outputs.deployment-id }}
+        steps:
+            - name: Publish to Maven
+              run: |
+                echo "${{ env.DEPLOYMENT_ID }}"

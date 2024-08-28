@@ -35,6 +35,7 @@ jobs:
             - name: Install dependencies
               run: |
                   npm install @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-tsdoc eslint typescript eslint-plugin-import@latest eslint-config-prettier prettier
+
             - name: Run linting and prettier
               run: |
                   for folder in node benchmarks/node benchmarks/utilities; do

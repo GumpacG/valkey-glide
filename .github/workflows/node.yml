@@ -39,17 +39,17 @@ env:
 
 jobs:
     load-engine-matrix:
-        runs-on: ubuntu-latest
-        outputs:
-            matrix: ${{ steps.load-engine-matrix.outputs.matrix }}
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+      runs-on: ubuntu-latest
+      outputs:
+        matrix: ${{ steps.load-engine-matrix.outputs.matrix }}
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v4
 
-            - name: Load the engine matrix
-              id: load-engine-matrix
-              shell: bash
-              run: echo "matrix=$(jq -c . < .github/json_matrices/engine-matrix.json)" >> $GITHUB_OUTPUT
+          - name: Load the engine matrix
+            id: load-engine-matrix
+            shell: bash
+            run: echo "matrix=$(jq -c . < .github/json_matrices/engine-matrix.json)" >> $GITHUB_OUTPUT
 
     test-ubuntu-latest:
         runs-on: ubuntu-latest
@@ -84,18 +84,18 @@ jobs:
 
             - name: test hybrid node modules - commonjs
               run: |
-                  npm install --package-lock-only
-                  npm ci
-                  npm run build-and-test
+                npm install --package-lock-only
+                npm ci
+                npm run build-and-test
               working-directory: ./node/hybrid-node-tests/commonjs-test
               env:
                   JEST_HTML_REPORTER_OUTPUT_PATH: test-report-commonjs.html
 
             - name: test hybrid node modules - ecma
               run: |
-                  npm install --package-lock-only
-                  npm ci
-                  npm run build-and-test
+                npm install --package-lock-only
+                npm ci
+                npm run build-and-test
               working-directory: ./node/hybrid-node-tests/ecmascript-test
               env:
                   JEST_HTML_REPORTER_OUTPUT_PATH: test-report-ecma.html
@@ -114,6 +114,7 @@ jobs:
                       node/test-report*.html
                       utils/clusters/**
                       benchmarks/results/**
+
     lint-rust:
         timeout-minutes: 15
         runs-on: ubuntu-latest
@@ -184,15 +185,18 @@ jobs:
                   yum -y install https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm
                   yum install -y git
                   git --version
+
             - uses: actions/checkout@v4
 
             - name: Checkout submodules
               run: |
                   git config --global --add safe.directory "$GITHUB_WORKSPACE"
                   git submodule update --init --recursive
+
             - name: Install NodeJS
               run: |
                   yum install -y nodejs
+
             - name: Build Node wrapper
               uses: ./.github/workflows/build-node-wrapper
               with:
@@ -215,6 +219,7 @@ jobs:
                       node/test-report*.html
                       utils/clusters/**
                       benchmarks/results/**
+
     build-and-test-linux-musl-on-x86:
         name: Build and test Node wrapper on Linux musl
         runs-on: ubuntu-latest
@@ -227,6 +232,7 @@ jobs:
               run: |
                   apk update
                   apk add git
+
             - uses: actions/checkout@v4
               with:
                   submodules: recursive

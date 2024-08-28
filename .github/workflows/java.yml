@@ -120,6 +120,7 @@ jobs:
                       utils/clusters/**
                       benchmarks/results/**
                       java/client/build/reports/spotbugs/**
+
     build-amazonlinux-latest:
         if: github.repository_owner == 'valkey-io'
         strategy:
@@ -141,12 +142,14 @@ jobs:
                   yum update
                   yum install -y git
                   git --version
+
             - uses: actions/checkout@v4
 
             - name: Checkout submodules
               run: |
                   git config --global --add safe.directory "$GITHUB_WORKSPACE"
                   git submodule update --init --recursive
+
             - name: Install shared software dependencies
               uses: ./.github/workflows/install-shared-dependencies
               with:
@@ -164,6 +167,7 @@ jobs:
             - name: Install Java
               run: |
                   yum install -y java-${{ matrix.java }}-amazon-corretto-devel.x86_64
+
             - name: Build java wrapper
               working-directory: java
               run: ./gradlew --continue build -x javadoc
@@ -178,6 +182,7 @@ jobs:
                       java/client/build/reports/**
                       java/integTest/build/reports/**
                       java/client/build/reports/spotbugs/**
+
     lint-rust:
         timeout-minutes: 15
         runs-on: ubuntu-latest

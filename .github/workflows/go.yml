@@ -32,17 +32,17 @@ concurrency:
 
 jobs:
     load-engine-matrix:
-        runs-on: ubuntu-latest
-        outputs:
-            matrix: ${{ steps.load-engine-matrix.outputs.matrix }}
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+      runs-on: ubuntu-latest
+      outputs:
+        matrix: ${{ steps.load-engine-matrix.outputs.matrix }}
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v4
 
-            - name: Load the engine matrix
-              id: load-engine-matrix
-              shell: bash
-              run: echo "matrix=$(jq -c . < .github/json_matrices/engine-matrix.json)" >> $GITHUB_OUTPUT
+          - name: Load the engine matrix
+            id: load-engine-matrix
+            shell: bash
+            run: echo "matrix=$(jq -c . < .github/json_matrices/engine-matrix.json)" >> $GITHUB_OUTPUT
 
     build-and-test-go-client:
         needs: load-engine-matrix
@@ -52,20 +52,19 @@ jobs:
             fail-fast: false
             matrix:
                 go:
-                    # - '1.18.10'
                     - '1.22.0'
                 engine: ${{ fromJson(needs.load-engine-matrix.outputs.matrix) }}
                 host:
-                    - {
-                        OS: ubuntu,
-                        RUNNER: ubuntu-latest,
-                        TARGET: x86_64-unknown-linux-gnu
-                    }
-                    # - {
-                    #   OS: macos,
-                    #   RUNNER: macos-latest,
-                    #   TARGET: aarch64-apple-darwin
-                    # }
+                  - {
+                    OS: ubuntu,
+                    RUNNER: ubuntu-latest,
+                    TARGET: x86_64-unknown-linux-gnu
+                  }
+                  # - {
+                  #   OS: macos,
+                  #   RUNNER: macos-latest,
+                  #   TARGET: aarch64-apple-darwin
+                  # }
 
         runs-on: ${{ matrix.host.RUNNER }}
 
@@ -106,7 +105,22 @@ jobs:
 
             - name: Run tests
               working-directory: ./go
-              run: make test
+              run: |
+                make test
+
+            - uses: ./.github/workflows/test-benchmark
+              with:
+                  language-flag: -go
+
+            - name: Upload logs and reports
+              if: always()
+              continue-on-error: true
+              uses: actions/upload-artifact@v4
+              with:
+                  name: reports-go-${{ matrix.go }}-redis-${{ matrix.redis }}-${{ matrix.os }}
+                  path: |
+                      utils/clusters/**
+                      benchmarks/results/**
 
     build-amazonlinux-latest:
         if: github.repository_owner == 'valkey-io'
@@ -115,7 +129,6 @@ jobs:
             fail-fast: false
             matrix:
                 go:
-                    - 1.18.10
                     - 1.22.0
         runs-on: ubuntu-latest
         container: amazonlinux:latest
@@ -129,12 +142,14 @@ jobs:
                   yum update
                   yum install -y git
                   git --version
+
             - uses: actions/checkout@v4
 
             - name: Checkout submodules
               run: |
                   git config --global --add safe.directory "$GITHUB_WORKSPACE"
                   git submodule update --init --recursive
+
             - name: Install shared software dependencies
               uses: ./.github/workflows/install-shared-dependencies
               with:
@@ -151,9 +166,13 @@ jobs:
                   tar -C /usr/local -xzf go${{ matrix.go }}.linux-amd64.tar.gz
                   echo "/usr/local/go/bin" >> $GITHUB_PATH
                   echo "$HOME/go/bin" >> $GITHUB_PATH
+
             - name: Install tools for Go ${{ matrix.go }}
               working-directory: ./go
               run: make install-tools-go${{ matrix.go }}
+
+            - name: Set LD_LIBRARY_PATH
+              run: echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/go/target/release/deps/" >> $GITHUB_ENV
 
             - name: Build client
               working-directory: ./go
@@ -165,7 +184,17 @@ jobs:
 
             - name: Run tests
               working-directory: ./go
-              run: make test
+              run: |
+                make test
+
+            - name: Upload cluster manager logs
+              if: always()
+              continue-on-error: true
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cluster-manager-logs-${{ matrix.go }}-redis-6-amazonlinux
+                  path: |
+                      utils/clusters/**
 
     lint-rust:
         timeout-minutes: 15

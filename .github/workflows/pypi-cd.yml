@@ -4,28 +4,28 @@ name: PyPI - Continuous Deployment
 
 on:
     pull_request:
-        paths:
-            - .github/workflows/pypi-cd.yml
-            - .github/workflows/build-python-wrapper/action.yml
-            - .github/workflows/start-self-hosted-runner/action.yml
-            - .github/workflows/install-shared-dependencies/action.yml
-            - .github/workflows/install-valkey/action.yml
-            - .github/json_matrices/build-matrix.json
+      paths:
+        - .github/workflows/pypi-cd.yml
+        - .github/workflows/build-python-wrapper/action.yml
+        - .github/workflows/start-self-hosted-runner/action.yml
+        - .github/workflows/install-shared-dependencies/action.yml
+        - .github/workflows/install-valkey/action.yml
+        - .github/json_matrices/build-matrix.json
     push:
         tags:
             - "v*.*"
     workflow_dispatch:
-        inputs:
-            version:
-                description: 'The release version of GLIDE, formatted as *.*.* or *.*.*-rc*'
-                required: true
+      inputs:
+        version:
+          description: 'The release version of GLIDE, formatted as *.*.* or *.*.*-rc*'
+          required: true
 
 concurrency:
     group: pypi-${{ github.head_ref || github.ref }}
     cancel-in-progress: true
 
 permissions:
-    id-token: write
+      id-token: write
 
 jobs:
     load-platform-matrix:
@@ -40,23 +40,24 @@ jobs:
               id: load-platform-matrix
               shell: bash
               run: |
-                  # Get the matrix from the matrix.json file, without the object that has the IMAGE key
-                  export "PLATFORM_MATRIX=$(jq 'map(select(.PACKAGE_MANAGERS | contains(["pypi"])))' < .github/json_matrices/build-matrix.json | jq -c .)"
-                  echo "PLATFORM_MATRIX=${PLATFORM_MATRIX}" >> $GITHUB_OUTPUT
+                # Get the matrix from the matrix.json file, without the object that has the IMAGE key
+                export "PLATFORM_MATRIX=$(jq 'map(select(.PACKAGE_MANAGERS | contains(["pypi"])))' < .github/json_matrices/build-matrix.json | jq -c .)"
+                echo "PLATFORM_MATRIX=${PLATFORM_MATRIX}" >> $GITHUB_OUTPUT
+                
 
     start-self-hosted-runner:
         if: github.repository_owner == 'valkey-io'
         runs-on: ubuntu-latest
         environment: AWS_ACTIONS
         steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Start self hosted EC2 runner
-              uses: ./.github/workflows/start-self-hosted-runner
-              with:
-                  role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
-                  aws-region: ${{ secrets.AWS_REGION }}
-                  ec2-instance-id: ${{ secrets.AWS_EC2_INSTANCE_ID }}
+          - name: Checkout
+            uses: actions/checkout@v4
+          - name: Start self hosted EC2 runner
+            uses: ./.github/workflows/start-self-hosted-runner
+            with:
+                role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+                aws-region: ${{ secrets.AWS_REGION }}
+                ec2-instance-id: ${{ secrets.AWS_EC2_INSTANCE_ID }}
 
     publish-binaries:
         needs: [start-self-hosted-runner, load-platform-matrix]
@@ -91,15 +92,16 @@ jobs:
                   fi
                   echo "RELEASE_VERSION=${R_VERSION}" >> $GITHUB_ENV
               env:
-                  EVENT_NAME: ${{ github.event_name }}
-                  INPUT_VERSION: ${{ github.event.inputs.version }}
+                EVENT_NAME: ${{ github.event_name }}
+                INPUT_VERSION: ${{ github.event.inputs.version }}
 
             - name: Check that the release version dont have typo init
               if: ${{ github.event_name != 'pull_request' && contains(env.RELEASE_VERSION, '-') && !contains(env.RELEASE_VERSION, 'rc') }}
               run: |
-                  echo "The release version "${{ env.RELEASE_VERSION }}" contains a typo, please fix it"
-                  echo "The release version should be in the format v{major-version}.{minor-version}.{patch-version}-rc{release-candidate-number} when it a release candidate or v{major-version}.{minor-version}.{patch-version} in a stable release."
-                  exit 1
+                echo "The release version "${{ env.RELEASE_VERSION }}" contains a typo, please fix it"
+                echo "The release version should be in the format v{major-version}.{minor-version}.{patch-version}-rc{release-candidate-number} when it a release candidate or v{major-version}.{minor-version}.{patch-version} in a stable release."
+                exit 1
+
             - name: Set the package version for Python
               working-directory: ./python
               run: |
@@ -107,6 +109,7 @@ jobs:
                   sed -i $SED_FOR_MACOS "s|255.255.255|${{ env.RELEASE_VERSION }}|g" ./Cargo.toml
                   # Log the edited Cargo.toml file
                   cat Cargo.toml
+
             - name: Set up Python
               if: ${{ !contains(matrix.build.RUNNER, 'self-hosted') }}
               uses: actions/setup-python@v4
@@ -116,15 +119,17 @@ jobs:
             - name: Set up Python older versions for MacOS
               if: startsWith(matrix.build.NAMED_OS, 'darwin')
               run: |
-                  brew update
-                  brew upgrade || true
-                  brew install python@3.8 python@3.9
+                brew update
+                brew upgrade || true
+                brew install python@3.8 python@3.9
+
             - name: Setup Python for self-hosted Ubuntu runners
               if: contains(matrix.build.OS, 'ubuntu') && contains(matrix.build.RUNNER, 'self-hosted')
               run: |
                   sudo apt update -y
                   sudo apt upgrade -y
                   sudo apt install python3 python3-venv python3-pip -y
+
             - name: Update package version in config.toml
               uses: ./.github/workflows/update-glide-version
               with:
@@ -147,6 +152,7 @@ jobs:
                   sed -i $SED_FOR_MACOS '/pb2.py/d' .gitignore
                   # Log the edited .gitignore file
                   cat .gitignore
+
             - name: Build Python wheels (linux)
               if: startsWith(matrix.build.NAMED_OS, 'linux')
               uses: PyO3/maturin-action@v1
@@ -165,17 +171,18 @@ jobs:
                       fi
                       PB_REL="https://github.com/protocolbuffers/protobuf/releases"
                       ARCH=`uname -p`
-                      if [[ $ARCH == 'x86_64' ]]; then
+                      if [[ $ARCH == 'x86_64' ]]; then 
                         PROTOC_ARCH="x86_64"
-                      elif [[ $ARCH == 'aarch64' ]]; then
+                      elif [[ $ARCH == 'aarch64' ]]; then 
                         PROTOC_ARCH="aarch_64"
-                      else
+                      else 
                         echo "Running on unsupported architecture: $ARCH. Expected one of: ['x86_64', 'aarch64']"
-                        exit 1
+                        exit 1 
                       fi
                       curl -LO $PB_REL/download/v3.20.3/protoc-3.20.3-linux-${PROTOC_ARCH}.zip
                       unzip protoc-3.20.3-linux-${PROTOC_ARCH}.zip -d $HOME/.local
                       export PATH="$PATH:$HOME/.local/bin"
+
             - name: Build Python wheels (macos)
               if: startsWith(matrix.build.NAMED_OS, 'darwin')
               uses: PyO3/maturin-action@v1

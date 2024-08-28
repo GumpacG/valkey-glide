@@ -45,8 +45,29 @@ jobs:
                   export "PLATFORM_MATRIX=$(jq 'map(select(.PACKAGE_MANAGERS | contains(["maven"])))' < .github/json_matrices/build-matrix.json | jq -c .)"
                   echo "PLATFORM_MATRIX=${PLATFORM_MATRIX}" >> $GITHUB_OUTPUT
 
-    create-binaries-to-publish:
+    set-release-version:
         needs: load-platform-matrix
+        runs-on: ubuntu-latest
+        outputs:
+            RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+        steps:
+            - name: Set the release version
+              id: release-version
+              shell: bash
+              run: |
+                if ${{ github.event_name == 'pull_request' }}; then
+                    R_VERSION="0.1.0"
+                elif ${{ github.event_name == 'workflow_dispatch' }}; then
+                    R_VERSION="${{ github.event.inputs.version }}"
+                else
+                    R_VERSION=${GITHUB_REF:11}
+                fi
+                    echo "RELEASE_VERSION=${R_VERSION}" >> $GITHUB_ENV
+                    echo "Release version detected: $R_VERSION"
+                echo "RELEASE_VERSION=$R_VERSION" >> $GITHUB_OUTPUT
+
+    create-binaries-to-publish:
+        needs: set-release-version
         if: github.repository_owner == 'valkey-io'
         timeout-minutes: 35
         env:
@@ -73,22 +94,6 @@ jobs:
             - uses: actions/checkout@v4
               with:
                   submodules: recursive
-
-            - name: Set the release version
-              shell: bash
-              run: |
-                  if ${{ github.event_name == 'pull_request' }}; then
-                    R_VERSION="0.1.0"
-                  elif ${{ github.event_name == 'workflow_dispatch' }}; then
-                    R_VERSION="${{ env.INPUT_VERSION }}"
-                  else
-                    R_VERSION=${GITHUB_REF:11}
-                  fi
-                  echo "RELEASE_VERSION=${R_VERSION}" >> $GITHUB_ENV
-                  echo "Release version detected: $R_VERSION"
-              env:
-                  EVENT_NAME: ${{ github.event_name }}
-                  INPUT_VERSION: ${{ github.event.inputs.version }}
 
             - name: Set up JDK
               uses: actions/setup-java@v4
@@ -148,29 +153,12 @@ jobs:
         needs: create-binaries-to-publish
         runs-on: ubuntu-latest
         outputs:
-            deployment-id: ${{ steps.maven-deployment.outputs.DEPLOYMENT_ID }}
+            DEPLOYMENT_ID: ${{ steps.maven-deployment.outputs.DEPLOYMENT_ID }}
+        env:
+            RELEASE_VERSION: ${{ needs.set-release-version.outputs.RELEASE_VERSION }}
         steps:
-            - name: test outputs
-              id: maven-deployment
-              run:
-                 echo "DEPLOYMENT_ID=123" >> $GITHUB_OUTPUT
             - name: Download published artifacts
               uses: actions/download-artifact@v4
-
-            - name: Set the release version
-              shell: bash
-              run: |
-                if ${{ github.event_name == 'pull_request' }}; then
-                  R_VERSION="0.1.0"
-                elif ${{ github.event_name == 'workflow_dispatch' }}; then
-                  R_VERSION="${{ env.INPUT_VERSION }}"
-                else
-                  R_VERSION=${GITHUB_REF:11}
-                fi
-                echo "RELEASE_VERSION=${R_VERSION}" >> $GITHUB_ENV
-                echo "Release version detected: $R_VERSION"
-              env:
-                INPUT_VERSION: ${{ github.event.inputs.version }}
 
             - name: Move all required files to one directory
             # TODO: Add `./java-aarch64-unknown-linux-gnu/* bundles` when we are able to support a linux arm runner.
@@ -204,6 +192,7 @@ jobs:
                   build
 
             - name: Publish to Maven Central
+              id: maven-deployment
               run: |
                   BEARER_TOKEN=$(echo "${{ secrets.CENTRAL_TOKEN_USERNAME }}:${{ secrets.CENTRAL_TOKEN_PASSWORD }}" | base64)
                   export DEPLOYMENT_ID=`curl --request POST \
@@ -213,6 +202,7 @@ jobs:
                   https://central.sonatype.com/api/v1/publisher/upload | tail -n 1`
                   echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_ENV
                   echo "BEARER_TOKEN=$BEARER_TOKEN" >> $GITHUB_ENV
+                  echo "DEPLOYMENT_ID=$DEPLOYMENT_ID"" >> $GITHUB_OUTPUT
 
             - name: Check status of deployment
               run: |
@@ -263,7 +253,7 @@ jobs:
 #        runs-on: ubuntu-latest
 #        environment: AWS_ACTIONS
 #        env:
-#            DEPLOYMENT_ID: ${{ needs.publish-deploy-to-maven-central-deployment.outputs.deployment-id }}
+#            DEPLOYMENT_ID: ${{ needs.publish-deploy-to-maven-central-deployment.outputs.DEPLOYMENT_ID }}
 #        steps:
 #            - name: Publish to Maven
 #              run: |
@@ -271,3 +261,11 @@ jobs:
 #                  curl --request POST \
 #                  --header "Authorization: Bearer $BEARER_TOKEN" \
 #                  "https://central.sonatype.com/api/v1/publisher/deployment/${{ env.DEPLOYMENT_ID }}"
+
+    test-deployment-id-output:
+        runs-on: ubuntu-latest
+        env:
+            DEPLOYMENT_ID: ${{ needs.publish-deploy-to-maven-central-deployment.outputs.DEPLOYMENT_ID }}
+        steps:
+            - name: Print deployment id
+              run: echo ${{ env.DEPLOYMENT_ID }}

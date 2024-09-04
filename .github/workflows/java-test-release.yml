@@ -1,0 +1,41 @@
+name: Java Test Maven Release
+
+on:
+    workflow_run:
+        workflows: [ "Java Prepare Deployment" ]
+        types:
+            - completed
+
+jobs:
+    #    load-platform-matrix:
+    #        runs-on: ubuntu-latest
+    #        outputs:
+    #            PLATFORM_MATRIX: ${{ steps.load-platform-matrix.outputs.PLATFORM_MATRIX }}
+    #        steps:
+    #            -   name: Checkout
+    #                uses: actions/checkout@v4
+    #
+    #            -   name: load-platform-matrix
+    #                id: load-platform-matrix
+    #                shell: bash
+    #                run: |
+    #                    # Get the matrix from the matrix.json file, without the object that has the IMAGE key
+    #                    export "PLATFORM_MATRIX=$(jq 'map(select(.PACKAGE_MANAGERS | contains(["maven"])))' < .github/json_matrices/build-matrix.json | jq -c .)"
+    #                    echo "PLATFORM_MATRIX=${PLATFORM_MATRIX}" >> $GITHUB_OUTPUT
+
+    get-release-version:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        runs-on: ubuntu-latest
+        outputs:
+            RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+        steps:
+            - name: Download published artifacts
+              uses: actions/download-artifact@v4
+
+            - name: Get Release Version
+              id: release-version
+              run: |
+                  ls
+                  echo ${${$(find valkey*)#"valkey-"}%".zip"}
+                  export R_VERSION=${${$(find valkey*)#"valkey-"}%".zip"}
+                  echo "RELEASE_VERSION=$R_VERSION" >> $GITHUB_OUTPUT
